@@ -15,8 +15,10 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 -- ---------------------------------------------------------------------
 
 -- Serves R01: Browse active cars in city by price range, newest first
--- Equality columns first (category_id, city_id), range next (price), then sort (posted_at DESC).
--- Covering INCLUDE (title, attributes) satisfies Index-Only Scan without table visits.
+-- Equality columns first (category_id, city_id), range next (price), posted_at last.
+-- NOTE: because price is a range column, this index cannot provide the posted_at DESC ordering;
+-- the plan is a Bitmap Heap Scan + Sort. listing_id is not in the index, so it is not index-only.
+-- INCLUDE (title, attributes) widens entries (JSONB); keep an eye on index-row size limits.
 CREATE INDEX IF NOT EXISTS idx_listings_r01 ON listings (category_id, city_id, price, posted_at DESC)
 INCLUDE (title, attributes)
 WHERE status = 'ACTIVE';
@@ -65,8 +67,8 @@ CREATE INDEX IF NOT EXISTS idx_listings_expires_active ON listings (expires_at)
 INCLUDE (seller_id, title)
 WHERE status = 'ACTIVE';
 
--- Serves R12: Spam detection (sellers posting 5+ ads on same day)
--- B-tree on seller_id and posted_at accelerates groupings by seller and posting time.
+-- Intended for R12, but NOT used by the planner (grouping is on posted_at::date over the whole table).
+-- Candidate for removal.
 CREATE INDEX IF NOT EXISTS idx_listings_seller_posted ON listings (seller_id, posted_at);
 
 -- Serves R13: Boost package adoption check
@@ -79,17 +81,19 @@ WHERE boost_package_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_listings_sold_category ON listings (category_id, sold_at, posted_at)
 WHERE status = 'SOLD';
 
+-- Intended for R17, but NOT used (query aggregates all rows; Seq Scan wins). Candidate for removal.
 -- Serves R17: Monetisation views comparison (boosted vs unboosted)
 -- Covering index grouping by category and boost boolean.
 CREATE INDEX IF NOT EXISTS idx_listings_r17 ON listings (category_id, (boost_package_id IS NOT NULL))
 INCLUDE (view_count);
 
+-- Intended for R18, but NOT used (full-table GROUP BY). Candidate for removal.
 -- Serves R18: Quality audit finding duplicate ads from the same seller
 -- Composite index over the grouping attributes (seller_id, title, price).
 CREATE INDEX IF NOT EXISTS idx_listings_duplicate_check ON listings (seller_id, title, price);
 
 -- Serves R19: Active car listings in city for city reports
--- Partial index targeting active listings in Bengaluru (city 1) and Cars (category 2).
+-- Partial index on ACTIVE listings (WHERE status = 'ACTIVE'); the R19 predicates category_id = 2, city_id = 1 are index key columns.
 CREATE INDEX IF NOT EXISTS idx_listings_r19 ON listings (category_id, city_id, listing_id)
 INCLUDE (title)
 WHERE status = 'ACTIVE';
@@ -138,6 +142,7 @@ CREATE INDEX IF NOT EXISTS idx_favourites_saved_at ON favourites (saved_at, list
 CREATE INDEX IF NOT EXISTS idx_reports_open ON reports (listing_id, reason)
 WHERE status = 'OPEN';
 
+-- Used by R04 (index-only); NOT used by R21 (full aggregation, Seq Scan).
 -- Serves R04, R21: Seller ratings aggregation
 CREATE INDEX IF NOT EXISTS idx_seller_ratings_seller ON seller_ratings (seller_id, stars);
 

@@ -35,12 +35,12 @@
 
 - **Total 30-Query Workload Runtime:**
   - **Baseline (Unindexed):** **`1,706.91 ms`**
-  - **Optimized:** **`299.49 ms`**
+  - **Optimized:** **`298.52 ms`**
   - **Overall Workload Speedup:** **`82.5% reduction (5.7× faster)`**
 - **Critical Query Highlights:**
   - **R19 (City Car Report):** `1,196.20 ms` → `6.11 ms` (**195× faster**) via CTE pre-aggregation and thread indexes.
   - **R06 (User Chat Inbox):** `74.15 ms` → `1.15 ms` (**64× faster**) via query rewrite and B-tree indexing.
-  - **R13 (Boost Packages Bug):** Fixed the SQL three-valued logic (`NULL`) defect via `NOT EXISTS` rewrite, correctly uncovering packages 5 and 6 in `0.29 ms`.
+  - **R13 (Boost Packages Bug):** Fixed the SQL three-valued logic (`NULL`) defect via `NOT EXISTS` rewrite, correctly uncovering packages 5 (Urgent tag 7 days) and 6 (Spotlight 60 days) in `0.29 ms`.
   - **R03 (Title Search):** `49.55 ms` → `1.02 ms` (**48× faster**) via PostgreSQL `pg_trgm` GIN index.
   - **R05 (Seller Dashboard):** `9.05 ms` → `0.20 ms` (**46× faster**) via covering Index-Only Scan.
   - **R02 (Car JSON Filters):** `6.37 ms` → `0.17 ms` (**37× faster**) via expression indexing on JSONB.

@@ -105,7 +105,7 @@ Core ad entity tracking used item sales across lifecycle states (`ACTIVE`, `EXPI
 | `posted_at` | `TIMESTAMPTZ` | `NOT NULL` | Publication timestamp. |
 | `expires_at` | `TIMESTAMPTZ` | `NOT NULL CHECK (expires_at >= posted_at)` | Listing expiry timestamp (typically posted_at + 30 days). |
 | `sold_at` | `TIMESTAMPTZ` | `NULL CHECK (sold_at IS NULL OR sold_at >= posted_at)` | Timestamp item was marked sold. Must not precede publication. |
-| *Constraint* | `CHECK` | `CONSTRAINT chk_sold_time CHECK ((status = 'SOLD' AND sold_at IS NOT NULL) OR (status <> 'SOLD'))` | Ensures every sold ad records an exact completion time. |
+| *Constraint* | `CHECK` | `(status = 'SOLD' AND sold_at IS NOT NULL) OR (status <> 'SOLD')` | Ensures every sold ad records an exact completion time. One-directional: it does not forbid `sold_at` on non-SOLD ads (the seed data has none). |
 | *Constraint* | `CHECK` | `CONSTRAINT chk_attributes_json_object CHECK (jsonb_typeof(attributes) = 'object')` | Enforces that `attributes` always stores a top-level JSONB key-value object rather than scalar primitives or arrays. |
 
 ### 2.6 `chat_threads`
@@ -126,7 +126,7 @@ Individual communications within a conversation thread.
 |---|---|---|---|
 | `message_id` | `INT` | `PRIMARY KEY` | Message identifier. |
 | `thread_id` | `INT` | `NOT NULL REFERENCES chat_threads(thread_id) ON DELETE CASCADE` | Parent conversation thread. |
-| `sender_id` | `INT` | `NOT NULL REFERENCES users(user_id) ON DELETE RESTRICT` | Message author (either thread buyer or listing seller). |
+| `sender_id` | `INT` | `NOT NULL REFERENCES users(user_id) ON DELETE RESTRICT` | Message author (either thread buyer or listing seller). Not enforced by the schema (needs a trigger or application check); verified on seed data by Check 2. |
 | `body` | `TEXT` | `NOT NULL` | Message textual content. |
 | `sent_at` | `TIMESTAMPTZ` | `NOT NULL` | Sent timestamp. |
 | `is_read` | `BOOLEAN` | `NOT NULL DEFAULT false` | Read status for badge counters (R07). |
@@ -143,7 +143,7 @@ Price negotiations initiated by prospective buyers.
 | `status` | `VARCHAR(20)` | `NOT NULL CHECK (status IN ('ACCEPTED', 'COUNTERED', 'PENDING', 'REJECTED', 'WITHDRAWN'))` | Negotiation state. |
 | `created_at` | `TIMESTAMPTZ` | `NOT NULL` | Offer submission timestamp. |
 | `responded_at` | `TIMESTAMPTZ` | `NULL CHECK (responded_at IS NULL OR responded_at >= created_at)` | Seller reaction timestamp. |
-| *Constraint* | `CHECK` | `CONSTRAINT chk_offer_pending_responded CHECK ((status = 'PENDING' AND responded_at IS NULL) OR (status <> 'PENDING' AND responded_at IS NOT NULL))` | Ties offer lifecycle status to response timestamp: pending offers cannot have a response time, and resolved offers must record when the response occurred. |
+| *Constraint* | `CHECK` | `CONSTRAINT chk_offer_pending_responded CHECK ((status = 'PENDING' AND responded_at IS NULL) OR (status <> 'PENDING' AND responded_at IS NOT NULL))` | Enforces workflow state alignment: pending offers have no response timestamp; completed offers must record responded_at. |
 
 ### 2.9 `favourites`
 Bookmarking ads for later inspection.
@@ -244,7 +244,7 @@ Every column contains atomic values, no repeating groups exist, and every table 
 11. **`seller_ratings`**:
     - FD: `rating_id → seller_id, rater_id, listing_id, stars, comment, created_at`
     - Candidate Key: `{rating_id}`, `{listing_id, rater_id}`
-    - Note on Transitivity: While `listing_id → seller_id` holds via the `listings` table, storing `seller_id` directly in `seller_ratings` is an intentional denormalization (justified below).
+    - Normal Form: **2NF only (not 3NF/BCNF).** `listing_id → seller_id` holds (a listing has one seller), so `seller_id` is transitively dependent on the key `rating_id`. This is an intentional denormalization (justified in §4). The schema does not enforce `seller_ratings.seller_id = listings.seller_id`; the seed data satisfies it (Check 4) but the application or a trigger / composite FK `(listing_id, seller_id) → listings` must guarantee it.
 
 ---
 
@@ -302,5 +302,5 @@ All integrity checks returned exactly **0 violations**, proving that our schema 
 ## 6. Seed Data Anomalies Discovered
 
 1. **Nullable Emails:** 24,885 out of 50,000 users have no email recorded. Mobile number (`phone`) is the mandatory unique credential.
-2. **Unsold Boost Packages & The Three-Valued Logic Trap:** In `listings.csv`, only boost packages 1, 2, 3, and 4 are ever purchased; packages 5 (*Top of list 3 days*) and 6 (*Urgent tag 7 days*) have 0 purchases. Furthermore, because `listings.boost_package_id` is nullable for unpromoted ads, standard SQL `package_id NOT IN (SELECT boost_package_id FROM listings)` evaluates to `UNKNOWN` and returns 0 rows. This is the root cause of the monetisation reporting bug (`R13`), resolved by using `NOT EXISTS` or filtering out `NULL`s.
+2. **Unsold Boost Packages & The Three-Valued Logic Trap:** In `listings.csv`, only boost packages 1, 2, 3, and 4 are ever purchased; packages 5 (*Urgent tag 7 days*, ₹99) and 6 (*Spotlight 60 days*, ₹1,499) have 0 purchases. Furthermore, because `listings.boost_package_id` is nullable for unpromoted ads, standard SQL `package_id NOT IN (SELECT boost_package_id FROM listings)` evaluates to `UNKNOWN` and returns 0 rows. This is the root cause of the monetisation reporting bug (`R13`), resolved by using `NOT EXISTS` or filtering out `NULL`s.
 3. **Sparse Descriptions:** 23,737 listings have blank descriptions, requiring `description TEXT NULL`.

@@ -1,4 +1,4 @@
-# Phase 5: Scalability Architecture & 100× Growth Report
+# Phase 5: Scalability Architecture, 20× Large-Dataset Results & 100× Growth Plan
 
 **Team:** T0058 (Sentinel) · **Project:** OLX Used Goods Marketplace Database · **Date:** November 2026
 **Hardware:** Apple MacBook Pro (Apple M4, 16 GB RAM) · **PostgreSQL:** 17.11
@@ -16,49 +16,11 @@ Every query was verified against its required production SLA target under our op
 | **Reports & Analytics (OLAP)** | R08, R12, R14, R15, R17, R18, R19, R20, R21, R24, R25 | **< 5,000 ms** | **0.95 ms – 61.88 ms** | ✅ **All Met** | Parallel sequential page reads and pre-aggregated CTE joins. |
 | **Automated Batch Jobs** | W04 (Ad Expiry Sweep) | **< 1,000 ms** | **78.69 ms** | ✅ **Met** | Partial index scan on active expiration timestamps (`expires_at`). |
 
-### 1.1 30-Query Scalability Comparison Table (`Seed` vs `Large` Dataset)
-
-Pre-filled with our exact Phase 4 `Optimized on seed (ms)` values from `benchmarks/results/optimized/summary.csv` and ready for `large_data.zip` measurements upon faculty release:
-
-| Query | Optimized on seed (ms) | Optimized on large (ms) | Growth (large ÷ seed) | Meets target? | If not, what you changed |
-|-------|------------------------:|------------------------:|----------------------:|:-------------:|--------------------------|
-| R01 | 0.565 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| R02 | 0.170 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| R03 | 1.017 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| R04 | 0.179 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| R05 | 0.195 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| R06 | 1.153 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| R07 | 0.901 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| R08 | 1.796 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| R09 | 0.236 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| R10 | 0.352 | *Pending `large_data.zip`* | — | ✅ (< 250 ms) | — |
-| R11 | 2.148 | *Pending `large_data.zip`* | — | ✅ (< 250 ms) | — |
-| R12 | 38.122 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| R13 | 0.290 | *Pending `large_data.zip`* | — | ✅ (< 250 ms) | — |
-| R14 | 7.452 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| R15 | 12.837 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| R16 | 4.848 | *Pending `large_data.zip`* | — | ✅ (< 250 ms) | — |
-| R17 | 12.490 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| R18 | 37.993 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| R19 | 6.111 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| R20 | 0.952 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| R21 | 13.521 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| R22 | 5.641 | *Pending `large_data.zip`* | — | ✅ (< 250 ms) | — |
-| R23 | 0.026 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| R24 | 5.505 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| R25 | 61.878 | *Pending `large_data.zip`* | — | ✅ (< 5,000 ms) | — |
-| W01 | 2.377 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| W02 | 0.449 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| W03 | 0.354 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| W04 | 78.689 | *Pending `large_data.zip`* | — | ✅ (< 1,000 ms) | — |
-| W05 | 0.276 | *Pending `large_data.zip`* | — | ✅ (< 5 ms) | — |
-| **Total** | **299.489** | *Pending `large_data.zip`* | — | ✅ **All Met** | — |
-
 ---
 
 ## 2. Growth Analysis: From Seed (120k) to 20× (2.4M) and 100× (12M)
 
-When scaling to 20× and 100× volume, query performance scales across three distinct complexity classes:
+When scaling to 20× and 100× volume, query performance is *expected* to scale across three complexity classes (these are projections from index theory, not measurements; the measured 20× results belong in §5 once `large_data.zip` is loaded):
 
 ```
 +---------------------------------------------------------------------------------------+
@@ -84,11 +46,11 @@ When scaling to 20× and 100× volume, query performance scales across three dis
 
 1. **Partition Key:** `listings` is partitioned using **`RANGE (posted_at)`** in semi-annual intervals (`listings_y2025_h1`, `listings_y2025_h2`, `listings_y2026_h1`, `listings_y2026_h2`, plus `listings_default`).
 2. **Why `posted_at` over `city_id` or `category_id`?**
-   - OLX ad lifecycles are inherently ephemeral: ads expire after 30 days. Over 90% of user traffic and critical batch jobs (`R01`, `R10`, `R16`, `R20`, `W04`) target recently posted or active listings.
+   - OLX ad lifecycles are inherently ephemeral: ads expire after 30 days. Most user traffic and critical batch jobs (estimate, not measured) (`R01`, `R10`, `R16`, `R20`, `W04`) target recently posted or active listings.
    - **Partition Pruning:** PostgreSQL's planner statically and dynamically prunes older partition branches from the execution plan. When querying June 2026 listings, all historical 2025 and future partitions are skipped entirely.
    - **Zero-Downtime Data Lifecycle:** Retiring ads older than 2 years is achieved via an instant, metadata-only command:
      ```sql
-     DROP TABLE listings_y2024_h1;
+     DROP TABLE listings_y2025_h1;   -- oldest partition once it is past the retention window
      ```
      This avoids generating millions of row delete locks and prevents table bloat.
 3. **Primary Key Requirement:** Under PostgreSQL's declarative partitioning specification, all unique and primary key constraints on a partitioned table **must include the partition key**. The composite primary key is declared as:
@@ -118,6 +80,7 @@ When scaling to 20× and 100× volume, query performance scales across three dis
    Execution Time: 1.288 ms
    ```
    As proven by the execution plan, PostgreSQL's query planner **statically prunes** 4 out of 5 partitions (`listings_y2025_h1`, `listings_y2025_h2`, `listings_y2026_h2`, and `listings_default`) and scans **only** `listings_y2026_h1` via `listings_y2026_h1_posted_at_idx`, reading 6,576 rows in `1.288 ms`.
+
 
 ### 3.2 Sharding Analysis: Evaluating Shard Keys
 
@@ -183,10 +146,29 @@ ALTER TABLE chat_messages SET (
 
 ---
 
+## 3.5 Partitioning Caveats
+
+`listings_partitioned` in `sql/08_partitioning.sql` is a demonstration copy: no other table has a foreign key to it, and its primary key `(listing_id, posted_at)` no longer guarantees `listing_id` is unique by itself. Queries that filter only on `listing_id` (e.g. R04) cannot prune partitions and must probe every partition's index.
+
+---
+
 ## 4. Conclusion & Production Readiness
 
 The engineered relational schema and optimization suite achieve:
 - **100% SLA compliance** across all real-time (< 5 ms), operational (< 250 ms), and reporting (< 5,000 ms) queries.
-- **A 5.7× overall workload acceleration** (total runtime dropped from 1,706 ms to 299 ms on single-thread execution).
+- **A 5.7× overall workload acceleration** (total runtime dropped from 1,706.9 ms to 298.5 ms on single-thread execution).
 - Complete resolution of the SQL NULL bug in monetization tracking (`R13`).
 - Seamless horizontal scalability via semi-annual partition pruning (`sql/08_partitioning.sql`) and a verified distributed sharding blueprint.
+
+---
+
+## 5. Large Dataset (20×) Results — TO BE COMPLETED
+
+`large_data.zip` is released Thu 19 Nov 2026. Fill this section from `benchmarks/results/large/summary.csv`.
+
+| Query | Optimized on seed (ms) | Optimized on large (ms) | Growth (large ÷ seed) | Meets target? | If not, what changed |
+|---|---:|---:|---:|:---:|---|
+| R01 | 0.565 | | | | |
+| … all 30 … | | | | | |
+
+Also required: what broke at scale (before/after plans), and storage (total, table vs index) on seed vs large.

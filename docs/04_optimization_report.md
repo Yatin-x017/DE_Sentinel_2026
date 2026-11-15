@@ -22,26 +22,26 @@ Benchmark measured using `./benchmarks/run_benchmark.sh olx_db optimized 3 sql/0
 | **R09** | 6.653 | Seq Scan computing Haversine math on 120k rows | Composite index `idx_listings_geo` (spatial bounds) | 0.236 | **96.5% (28×)** | ✅ |
 | **R10** | 5.918 | Seq Scan evaluating expiry range | Partial covering index `idx_listings_expires_active` | 0.352 | **94.1% (16×)** | ✅ |
 | **R11** | 2.204 | Seq Scan on reports table | Partial index `idx_reports_open` | 2.148 | **2.5%** | ✅ |
-| **R12** | 36.415 | Full table hash aggregate by seller and date | Composite B-tree index on `(seller_id, posted_at)` | 38.122 | Baseline (~same) | ✅ |
+| **R12** | 36.415 | Full table hash aggregate by seller and date | Composite B-tree index on `(seller_id, posted_at)` (not used: `posted_at::date` is not sargable on it) | 38.122 | −4.7% (no gain) | ✅ |
 | **R13** | 15.086 | **SQL NULL Trap:** returned 0 rows | `NOT EXISTS` rewrite + partial index | 0.290 | **98.1% (52×)** | 🎯 Fixed |
 | **R14** | 9.609 | Function on column `EXTRACT(YEAR)` | Sargable date range rewrite + index scan | 7.452 | **22.4%** | ✅ |
-| **R15** | 12.754 | Three-way join and aggregation | B-tree index `idx_offers_listing_status` | 12.837 | Baseline (~same) | ✅ |
-| **R16** | 12.691 | Seq Scan on favourites table | Index `idx_favourites_saved_at` | 4.848 | **61.8% (2.6×)** | ✅ |
-| **R17** | 12.611 | Full scan grouping boosted ads | Covering index `idx_listings_r17` | 12.490 | Baseline (~same) | ✅ |
-| **R18** | 39.737 | Full scan hashing 120k rows for duplicates | Composite index `idx_listings_duplicate_check` | 37.993 | Baseline (~same) | ✅ |
+| **R15** | 12.754 | Three-way join and aggregation | `idx_offers_listing_status` created but not used (all offers are read) | 12.837 | Baseline (~same) | ✅ |
+| **R16** | 12.691 | Seq Scan on favourites table | Index `idx_favourites_saved_at`; the join to listings full-scans the partial index `idx_listings_expires_active` (incidental) | 4.848 | **61.8% (2.6×)** | ✅ |
+| **R17** | 12.611 | Full scan grouping boosted ads | `idx_listings_r17` created but not used (query reads ~all rows) | 12.490 | Baseline (~same) | ✅ |
+| **R18** | 39.737 | Full scan hashing 120k rows for duplicates | `idx_listings_duplicate_check` created but not used (full-table GROUP BY) | 37.993 | Baseline (~same) | ✅ |
 | **R19** | 1196.204 | Correlated subqueries scanning messages repeatedly | **CTE pre-aggregation rewrite** + thread/message indexes | 6.111 | **99.5% (195×)** | ✅ |
 | **R20** | 7.808 | Full scan filtering June dates | Sargable date range rewrite + B-tree index | 0.952 | **87.8% (8.2×)** | ✅ |
-| **R21** | 9.894 | Group aggregation over 11k ratings | Covering index on `seller_ratings` | 13.521 | Baseline (~same) | ✅ |
+| **R21** | 9.894 | Group aggregation over 11k ratings | Covering index `idx_seller_ratings_seller` (not used by the planner: still Seq Scan) | 13.521 | **−36.7% (regression, within noise of a 9–21 ms spread; index is dead weight)** | ✅ |
 | **R22** | 42.658 | Scan & discard 50,000 heap rows | Covering index `idx_listings_posted_at_desc` | 5.641 | **86.8% (7.5×)** | ✅ |
 | **R23** | 0.026 | Already optimal B-tree scan on phone | Retained unique B-tree | 0.026 | Baseline | ✅ |
-| **R24** | 12.728 | Seq Scan on listings | Partial index scan | 5.505 | **56.8% (2.3×)** | ✅ |
+| **R24** | 12.728 | Seq Scan on listings | Incidental: planner full-scans the partial index `idx_listings_expires_active` (it only holds ACTIVE rows) instead of the heap | 5.505 | **56.7% (2.3×)** | ✅ |
 | **R25** | 63.106 | Multi-table joins across 209k messages | Composite indexes on chat threads and messages | 61.878 | Baseline (~same) | ✅ |
-| **W01** | 0.691 | Single row INSERT into listings | Maintained 12 B-tree index entries on insert | 2.377 | -244% (acceptable) | ✅ |
+| **W01** | 0.691 | Single row INSERT into listings | Maintains 16 B-tree entries on insert (15 secondary + PK) | 2.377 | -244% (acceptable) | ✅ |
 | **W02** | 9.754 | Seq Scan to find oldest active ad | B-tree index on `(seller_id, status, listing_id)` | 0.449 | **95.4% (21×)** | ✅ |
 | **W03** | 0.501 | Subquery finding max thread_id | B-tree index on `chat_threads(buyer_id)` | 0.354 | **29.3%** | ✅ |
-| **W04** | 46.709 | Seq Scan to find expired listings | Partial index `idx_listings_expires_active` | 78.689 | Heap tuple updates | ✅ |
+| **W04** | 46.709 | Seq Scan to find expired listings | Partial index `idx_listings_expires_active` | 78.689 | **−68.5% (slower)**: the updated column `status` is in many partial indexes, so rows can't be HOT-updated and every index is maintained; median 19.1 → 34.0 ms | ✅ |
 | **W05** | 1.281 | Seq Scan on offers table | Index `idx_offers_listing_status` | 0.276 | **78.5% (4.6×)** | ✅ |
-| **Total** | **1706.912** | Sum of all 30 benchmark operations | **Combined indexing & query refactoring** | **299.489** | **82.5% (5.7×)** | ✅ |
+| **Total** | **1706.912** | Sum of all 30 benchmark operations | **Combined indexing & query refactoring** | **298.523** | **82.5% (5.7×)** | ✅ |
 
 ---
 
@@ -403,7 +403,7 @@ WHERE NOT EXISTS (
 );
 ```
 Supported by partial index `idx_listings_boost_package ON listings (boost_package_id) WHERE boost_package_id IS NOT NULL;`.
-**Correct Output:** Packages 5 (*Top of list 3 days*, ₹799) and 6 (*Urgent tag 7 days*, ₹99) are immediately identified as having 0 purchases, executing in **0.29 ms**.
+**Correct Output:** Packages 5 (*Urgent tag 7 days*, ₹99) and 6 (*Spotlight 60 days*, ₹1,499) are immediately identified as having 0 purchases, executing in **0.29 ms**.
 
 ---
 
@@ -634,3 +634,13 @@ Our 23 custom secondary indexes consume **59.1 MB** (61,980,672 bytes) across th
 ## 6. Queries Resilient to Speedup & Justification
 
 - **R12 (Spam Detection), R18 (Duplicate Ads), R25 (Seller Responsiveness):** These queries perform deep multi-table aggregations or hash joins across the vast majority of records in `listings` (120,000 rows) and `chat_messages` (209,000 rows). When a query must aggregate more than 30–40% of the entire table, PostgreSQL's cost-based optimizer deliberately selects a Sequential Scan over index scans because sequential page I/O is faster than random index block lookups. These queries belong to the **Reporting / Analytics SLA (< 5,000 ms)** and comfortably beat their target (~38–62 ms).
+
+---
+
+## 7. Corrections & Caveats
+
+- **Unused indexes:** `idx_listings_seller_posted` (R12), `idx_listings_r17` (R17), `idx_listings_duplicate_check` (R18), `idx_offers_listing_status` (R15, read side) and `idx_seller_ratings_seller` (R21) are not chosen by the planner in the optimized plans. They only add write cost (see W01, W04) and are candidates for removal.
+- **Timezone:** the R14 and R20 rewrites use explicit `+05:30` bounds; they are equivalent to the originals only when the session `TimeZone` is `Asia/Kolkata`.
+- **R13 result difference is intentional:** the original returns 0 rows (NULL trap); the rewrite returns packages 5 and 6.
+- **W04 comparison:** the optimized average (78.7 ms) is inflated by a single 168.9 ms run; the median is 34.0 ms vs 19.1 ms at baseline, so W04 is slower either way.
+- **Total:** the optimized column sums to 298.523 ms (82.5% reduction, 5.7×).

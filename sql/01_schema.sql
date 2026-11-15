@@ -9,7 +9,6 @@
 CREATE SCHEMA IF NOT EXISTS olx;
 SET search_path TO olx;
 
--- 1. Cities Reference Table
 DROP TABLE IF EXISTS seller_ratings CASCADE;
 DROP TABLE IF EXISTS reports CASCADE;
 DROP TABLE IF EXISTS favourites CASCADE;
@@ -22,6 +21,7 @@ DROP TABLE IF EXISTS boost_packages CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
 DROP TABLE IF EXISTS cities CASCADE;
 
+-- 1. Cities Reference Table
 CREATE TABLE cities (
     city_id INT PRIMARY KEY,
     city_name VARCHAR(100) NOT NULL UNIQUE,

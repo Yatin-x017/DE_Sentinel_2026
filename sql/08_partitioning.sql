@@ -45,7 +45,7 @@ CREATE TABLE listings_partitioned (
 ) PARTITION BY RANGE (posted_at);
 
 -- ---------------------------------------------------------------------
--- 2. Range Partitions (Semi-Annual Quarters)
+-- 2. Range Partitions (Semi-Annual)
 -- ---------------------------------------------------------------------
 
 -- 2025 Partitions
