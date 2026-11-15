@@ -1,0 +1,45 @@
+=== R03 run 1 ===
+Limit  (cost=6257.11..6257.21 rows=40 width=36) (actual time=49.062..49.065 rows=40.00 loops=1)
+  Buffers: shared hit=4448
+  ->  Sort  (cost=6257.11..6258.06 rows=383 width=36) (actual time=49.062..49.063 rows=40.00 loops=1)
+        Sort Key: price
+        Sort Method: top-N heapsort  Memory: 29kB
+        Buffers: shared hit=4448
+        ->  Seq Scan on listings  (cost=0.00..6245.00 rows=383 width=36) (actual time=0.090..48.974 rows=375.00 loops=1)
+              Filter: (((title)::text ~~* '%iphone 13%'::text) AND ((status)::text = 'ACTIVE'::text))
+              Rows Removed by Filter: 119625
+              Buffers: shared hit=4445
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.287 ms
+Execution Time: 49.076 ms
+=== R03 run 2 ===
+Limit  (cost=6257.11..6257.21 rows=40 width=36) (actual time=49.471..49.473 rows=40.00 loops=1)
+  Buffers: shared hit=4448
+  ->  Sort  (cost=6257.11..6258.06 rows=383 width=36) (actual time=49.470..49.471 rows=40.00 loops=1)
+        Sort Key: price
+        Sort Method: top-N heapsort  Memory: 29kB
+        Buffers: shared hit=4448
+        ->  Seq Scan on listings  (cost=0.00..6245.00 rows=383 width=36) (actual time=0.081..49.378 rows=375.00 loops=1)
+              Filter: (((title)::text ~~* '%iphone 13%'::text) AND ((status)::text = 'ACTIVE'::text))
+              Rows Removed by Filter: 119625
+              Buffers: shared hit=4445
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.286 ms
+Execution Time: 49.484 ms
+=== R03 run 3 ===
+Limit  (cost=6257.11..6257.21 rows=40 width=36) (actual time=50.085..50.087 rows=40.00 loops=1)
+  Buffers: shared hit=4448
+  ->  Sort  (cost=6257.11..6258.06 rows=383 width=36) (actual time=50.084..50.085 rows=40.00 loops=1)
+        Sort Key: price
+        Sort Method: top-N heapsort  Memory: 29kB
+        Buffers: shared hit=4448
+        ->  Seq Scan on listings  (cost=0.00..6245.00 rows=383 width=36) (actual time=0.083..49.912 rows=375.00 loops=1)
+              Filter: (((title)::text ~~* '%iphone 13%'::text) AND ((status)::text = 'ACTIVE'::text))
+              Rows Removed by Filter: 119625
+              Buffers: shared hit=4445
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.279 ms
+Execution Time: 50.098 ms

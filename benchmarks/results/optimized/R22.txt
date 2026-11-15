@@ -1,0 +1,33 @@
+=== R22 run 1 ===
+Limit  (cost=3269.77..3271.40 rows=25 width=43) (actual time=7.018..7.020 rows=25.00 loops=1)
+  Buffers: shared hit=968 read=409
+  ->  Index Only Scan using idx_listings_posted_at_desc on listings  (cost=0.42..7846.86 rows=120000 width=43) (actual time=0.337..6.097 rows=50025.00 loops=1)
+        Heap Fetches: 20291
+        Index Searches: 1
+        Buffers: shared hit=968 read=409
+Planning:
+  Buffers: shared hit=447
+Planning Time: 0.573 ms
+Execution Time: 7.032 ms
+=== R22 run 2 ===
+Limit  (cost=3269.77..3271.40 rows=25 width=43) (actual time=4.550..4.552 rows=25.00 loops=1)
+  Buffers: shared hit=1377
+  ->  Index Only Scan using idx_listings_posted_at_desc on listings  (cost=0.42..7846.86 rows=120000 width=43) (actual time=0.033..3.676 rows=50025.00 loops=1)
+        Heap Fetches: 20291
+        Index Searches: 1
+        Buffers: shared hit=1377
+Planning:
+  Buffers: shared hit=447
+Planning Time: 0.776 ms
+Execution Time: 4.564 ms
+=== R22 run 3 ===
+Limit  (cost=3269.77..3271.40 rows=25 width=43) (actual time=5.311..5.313 rows=25.00 loops=1)
+  Buffers: shared hit=1377
+  ->  Index Only Scan using idx_listings_posted_at_desc on listings  (cost=0.42..7846.86 rows=120000 width=43) (actual time=0.029..4.392 rows=50025.00 loops=1)
+        Heap Fetches: 20291
+        Index Searches: 1
+        Buffers: shared hit=1377
+Planning:
+  Buffers: shared hit=447
+Planning Time: 0.557 ms
+Execution Time: 5.326 ms

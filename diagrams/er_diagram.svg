@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" width="100%" height="100%" style="background:#0d1117; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#58a6ff" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="40" y="45" fill="#58a6ff" font-size="24" font-weight="bold">OLX Marketplace Relational Schema (olx)</text>
+  <text x="40" y="72" fill="#8b949e" font-size="14">Team T0058 (Sentinel) · PostgreSQL 15+ Complete Entity-Relationship Model</text>
+
+  <!-- CITIES -->
+  <g transform="translate(40, 110)">
+    <rect width="280" height="120" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">cities</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">city_id (INT)</text>
+    <text x="12" y="78" fill="#79c0ff" font-size="12" font-weight="bold">UQ</text><text x="40" y="78" fill="#c9d1d9" font-size="12">city_name (VARCHAR)</text>
+    <text x="40" y="101" fill="#c9d1d9" font-size="12">state (VARCHAR)</text>
+  </g>
+
+  <!-- CATEGORIES -->
+  <g transform="translate(360, 110)">
+    <rect width="280" height="120" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">categories</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">category_id (INT)</text>
+    <text x="40" y="78" fill="#c9d1d9" font-size="12">category_name (VARCHAR)</text>
+    <text x="12" y="101" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="101" fill="#c9d1d9" font-size="12">parent_id (INT → categories)</text>
+  </g>
+
+  <!-- BOOST PACKAGES -->
+  <g transform="translate(680, 110)">
+    <rect width="280" height="140" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">boost_packages</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">package_id (INT)</text>
+    <text x="12" y="78" fill="#79c0ff" font-size="12" font-weight="bold">UQ</text><text x="40" y="78" fill="#c9d1d9" font-size="12">package_name (VARCHAR)</text>
+    <text x="40" y="101" fill="#c9d1d9" font-size="12">price (NUMERIC)</text>
+    <text x="40" y="124" fill="#c9d1d9" font-size="12">duration_days (INT)</text>
+  </g>
+
+  <!-- USERS -->
+  <g transform="translate(40, 310)">
+    <rect width="280" height="280" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">users</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">user_id (INT)</text>
+    <text x="40" y="78" fill="#c9d1d9" font-size="12">full_name (VARCHAR)</text>
+    <text x="12" y="101" fill="#79c0ff" font-size="12" font-weight="bold">UQ</text><text x="40" y="101" fill="#c9d1d9" font-size="12">phone (VARCHAR)</text>
+    <text x="12" y="124" fill="#79c0ff" font-size="12" font-weight="bold">UQ</text><text x="40" y="124" fill="#c9d1d9" font-size="12">email (VARCHAR)</text>
+    <text x="12" y="147" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="147" fill="#c9d1d9" font-size="12">city_id (INT → cities)</text>
+    <text x="40" y="170" fill="#c9d1d9" font-size="12">phone_verified (BOOLEAN)</text>
+    <text x="40" y="193" fill="#c9d1d9" font-size="12">is_banned (BOOLEAN)</text>
+    <text x="40" y="216" fill="#c9d1d9" font-size="12">joined_at (TIMESTAMPTZ)</text>
+  </g>
+
+  <!-- LISTINGS -->
+  <g transform="translate(380, 310)">
+    <rect width="340" height="520" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="340" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">listings</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">listing_id (INT)</text>
+    <text x="12" y="78" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="78" fill="#c9d1d9" font-size="12">seller_id (INT → users)</text>
+    <text x="12" y="101" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="101" fill="#c9d1d9" font-size="12">category_id (INT → categories)</text>
+    <text x="40" y="124" fill="#c9d1d9" font-size="12">title (VARCHAR)</text>
+    <text x="40" y="147" fill="#c9d1d9" font-size="12">description (TEXT)</text>
+    <text x="40" y="170" fill="#c9d1d9" font-size="12">price (NUMERIC)</text>
+    <text x="40" y="193" fill="#c9d1d9" font-size="12">is_negotiable (BOOLEAN)</text>
+    <text x="40" y="216" fill="#c9d1d9" font-size="12">item_condition (VARCHAR)</text>
+    <text x="40" y="239" fill="#c9d1d9" font-size="12">attributes (JSONB)</text>
+    <text x="12" y="262" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="262" fill="#c9d1d9" font-size="12">city_id (INT → cities)</text>
+    <text x="40" y="285" fill="#c9d1d9" font-size="12">locality (VARCHAR)</text>
+    <text x="40" y="308" fill="#c9d1d9" font-size="12">latitude, longitude (NUMERIC)</text>
+    <text x="40" y="331" fill="#c9d1d9" font-size="12">image_count, view_count (INT)</text>
+    <text x="12" y="354" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="354" fill="#c9d1d9" font-size="12">boost_package_id (INT → boost)</text>
+    <text x="40" y="377" fill="#c9d1d9" font-size="12">status (VARCHAR)</text>
+    <text x="40" y="400" fill="#c9d1d9" font-size="12">posted_at (TIMESTAMPTZ)</text>
+    <text x="40" y="423" fill="#c9d1d9" font-size="12">expires_at (TIMESTAMPTZ)</text>
+    <text x="40" y="446" fill="#c9d1d9" font-size="12">sold_at (TIMESTAMPTZ)</text>
+  </g>
+
+  <!-- CHAT THREADS -->
+  <g transform="translate(780, 310)">
+    <rect width="300" height="180" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="300" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">chat_threads</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">thread_id (INT)</text>
+    <text x="12" y="78" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="78" fill="#c9d1d9" font-size="12">listing_id (INT → listings)</text>
+    <text x="12" y="101" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="101" fill="#c9d1d9" font-size="12">buyer_id (INT → users)</text>
+    <text x="40" y="124" fill="#c9d1d9" font-size="12">created_at (TIMESTAMPTZ)</text>
+    <text x="12" y="147" fill="#e3b341" font-size="12">UQ</text><text x="40" y="147" fill="#8b949e" font-size="12">(listing_id, buyer_id)</text>
+  </g>
+
+  <!-- CHAT MESSAGES -->
+  <g transform="translate(1140, 310)">
+    <rect width="280" height="200" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">chat_messages</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">message_id (INT)</text>
+    <text x="12" y="78" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="78" fill="#c9d1d9" font-size="12">thread_id (INT → chat_threads)</text>
+    <text x="12" y="101" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="101" fill="#c9d1d9" font-size="12">sender_id (INT → users)</text>
+    <text x="40" y="124" fill="#c9d1d9" font-size="12">body (TEXT)</text>
+    <text x="40" y="147" fill="#c9d1d9" font-size="12">sent_at (TIMESTAMPTZ)</text>
+    <text x="40" y="170" fill="#c9d1d9" font-size="12">is_read (BOOLEAN)</text>
+  </g>
+
+  <!-- OFFERS -->
+  <g transform="translate(780, 540)">
+    <rect width="300" height="200" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="300" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">offers</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">offer_id (INT)</text>
+    <text x="12" y="78" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="78" fill="#c9d1d9" font-size="12">listing_id (INT → listings)</text>
+    <text x="12" y="101" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="101" fill="#c9d1d9" font-size="12">buyer_id (INT → users)</text>
+    <text x="40" y="124" fill="#c9d1d9" font-size="12">offer_price (NUMERIC)</text>
+    <text x="40" y="147" fill="#c9d1d9" font-size="12">status (VARCHAR)</text>
+    <text x="40" y="170" fill="#c9d1d9" font-size="12">created_at, responded_at (TS)</text>
+  </g>
+
+  <!-- FAVOURITES -->
+  <g transform="translate(40, 640)">
+    <rect width="280" height="120" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">favourites</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">user_id (INT → users)</text>
+    <text x="12" y="78" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="78" fill="#c9d1d9" font-size="12">listing_id (INT → listings)</text>
+    <text x="40" y="101" fill="#c9d1d9" font-size="12">saved_at (TIMESTAMPTZ)</text>
+  </g>
+
+  <!-- REPORTS -->
+  <g transform="translate(780, 780)">
+    <rect width="300" height="180" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="300" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">reports</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">report_id (INT)</text>
+    <text x="12" y="78" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="78" fill="#c9d1d9" font-size="12">listing_id (INT → listings)</text>
+    <text x="12" y="101" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="101" fill="#c9d1d9" font-size="12">reporter_id (INT → users)</text>
+    <text x="40" y="124" fill="#c9d1d9" font-size="12">reason, status (VARCHAR)</text>
+    <text x="40" y="147" fill="#c9d1d9" font-size="12">created_at (TIMESTAMPTZ)</text>
+  </g>
+
+  <!-- SELLER RATINGS -->
+  <g transform="translate(380, 870)">
+    <rect width="340" height="190" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <rect width="340" height="32" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+    <text x="12" y="22" fill="#58a6ff" font-weight="bold" font-size="14">seller_ratings</text>
+    <text x="12" y="55" fill="#e3b341" font-size="12" font-weight="bold">PK</text><text x="40" y="55" fill="#c9d1d9" font-size="12">rating_id (INT)</text>
+    <text x="12" y="78" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="78" fill="#c9d1d9" font-size="12">seller_id (INT → users)</text>
+    <text x="12" y="101" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="101" fill="#c9d1d9" font-size="12">rater_id (INT → users)</text>
+    <text x="12" y="124" fill="#79c0ff" font-size="12" font-weight="bold">FK</text><text x="40" y="124" fill="#c9d1d9" font-size="12">listing_id (INT → listings)</text>
+    <text x="40" y="147" fill="#c9d1d9" font-size="12">stars (INT 1-5), comment (TEXT)</text>
+    <text x="40" y="170" fill="#c9d1d9" font-size="12">created_at (TIMESTAMPTZ)</text>
+  </g>
+</svg>

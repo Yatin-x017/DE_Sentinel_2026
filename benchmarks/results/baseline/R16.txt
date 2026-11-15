@@ -1,0 +1,96 @@
+=== R16 run 1 ===
+Limit  (cost=7404.91..7404.96 rows=20 width=28) (actual time=12.271..12.273 rows=20.00 loops=1)
+  Buffers: shared hit=4833
+  ->  Sort  (cost=7404.91..7405.23 rows=130 width=28) (actual time=12.271..12.272 rows=20.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=4833
+        ->  GroupAggregate  (cost=7398.85..7401.45 rows=130 width=28) (actual time=12.067..12.210 rows=952.00 loops=1)
+              Group Key: f.listing_id, l.title
+              Buffers: shared hit=4830
+              ->  Sort  (cost=7398.85..7399.17 rows=130 width=20) (actual time=12.059..12.085 rows=1379.00 loops=1)
+                    Sort Key: f.listing_id, l.title
+                    Sort Method: quicksort  Memory: 103kB
+                    Buffers: shared hit=4830
+                    ->  Hash Join  (cost=1273.61..7394.28 rows=130 width=20) (actual time=11.022..11.967 rows=1379.00 loops=1)
+                          Hash Cond: (l.listing_id = f.listing_id)
+                          Buffers: shared hit=4824
+                          ->  Seq Scan on listings l  (cost=0.00..5945.00 rows=9964 width=20) (actual time=0.005..9.630 rows=9960.00 loops=1)
+                                Filter: ((status)::text = 'ACTIVE'::text)
+                                Rows Removed by Filter: 110040
+                                Buffers: shared hit=4445
+                          ->  Hash  (cost=1254.00..1254.00 rows=1569 width=4) (actual time=1.875..1.875 rows=1617.00 loops=1)
+                                Buckets: 2048  Batches: 1  Memory Usage: 73kB
+                                Buffers: shared hit=379
+                                ->  Seq Scan on favourites f  (cost=0.00..1254.00 rows=1569 width=4) (actual time=0.006..1.807 rows=1617.00 loops=1)
+                                      Filter: (saved_at >= '2026-06-24 00:00:00+05:30'::timestamp with time zone)
+                                      Rows Removed by Filter: 68383
+                                      Buffers: shared hit=379
+Planning:
+  Buffers: shared hit=204
+Planning Time: 0.378 ms
+Execution Time: 12.301 ms
+=== R16 run 2 ===
+Limit  (cost=7404.91..7404.96 rows=20 width=28) (actual time=12.815..12.818 rows=20.00 loops=1)
+  Buffers: shared hit=4833
+  ->  Sort  (cost=7404.91..7405.23 rows=130 width=28) (actual time=12.814..12.816 rows=20.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=4833
+        ->  GroupAggregate  (cost=7398.85..7401.45 rows=130 width=28) (actual time=12.569..12.749 rows=952.00 loops=1)
+              Group Key: f.listing_id, l.title
+              Buffers: shared hit=4830
+              ->  Sort  (cost=7398.85..7399.17 rows=130 width=20) (actual time=12.563..12.593 rows=1379.00 loops=1)
+                    Sort Key: f.listing_id, l.title
+                    Sort Method: quicksort  Memory: 103kB
+                    Buffers: shared hit=4830
+                    ->  Hash Join  (cost=1273.61..7394.28 rows=130 width=20) (actual time=11.481..12.467 rows=1379.00 loops=1)
+                          Hash Cond: (l.listing_id = f.listing_id)
+                          Buffers: shared hit=4824
+                          ->  Seq Scan on listings l  (cost=0.00..5945.00 rows=9964 width=20) (actual time=0.004..10.329 rows=9960.00 loops=1)
+                                Filter: ((status)::text = 'ACTIVE'::text)
+                                Rows Removed by Filter: 110040
+                                Buffers: shared hit=4445
+                          ->  Hash  (cost=1254.00..1254.00 rows=1569 width=4) (actual time=1.621..1.621 rows=1617.00 loops=1)
+                                Buckets: 2048  Batches: 1  Memory Usage: 73kB
+                                Buffers: shared hit=379
+                                ->  Seq Scan on favourites f  (cost=0.00..1254.00 rows=1569 width=4) (actual time=0.005..1.552 rows=1617.00 loops=1)
+                                      Filter: (saved_at >= '2026-06-24 00:00:00+05:30'::timestamp with time zone)
+                                      Rows Removed by Filter: 68383
+                                      Buffers: shared hit=379
+Planning:
+  Buffers: shared hit=204
+Planning Time: 0.300 ms
+Execution Time: 12.844 ms
+=== R16 run 3 ===
+Limit  (cost=7404.91..7404.96 rows=20 width=28) (actual time=12.902..12.904 rows=20.00 loops=1)
+  Buffers: shared hit=4833
+  ->  Sort  (cost=7404.91..7405.23 rows=130 width=28) (actual time=12.901..12.902 rows=20.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=4833
+        ->  GroupAggregate  (cost=7398.85..7401.45 rows=130 width=28) (actual time=12.700..12.842 rows=952.00 loops=1)
+              Group Key: f.listing_id, l.title
+              Buffers: shared hit=4830
+              ->  Sort  (cost=7398.85..7399.17 rows=130 width=20) (actual time=12.695..12.720 rows=1379.00 loops=1)
+                    Sort Key: f.listing_id, l.title
+                    Sort Method: quicksort  Memory: 103kB
+                    Buffers: shared hit=4830
+                    ->  Hash Join  (cost=1273.61..7394.28 rows=130 width=20) (actual time=11.613..12.603 rows=1379.00 loops=1)
+                          Hash Cond: (l.listing_id = f.listing_id)
+                          Buffers: shared hit=4824
+                          ->  Seq Scan on listings l  (cost=0.00..5945.00 rows=9964 width=20) (actual time=0.004..10.422 rows=9960.00 loops=1)
+                                Filter: ((status)::text = 'ACTIVE'::text)
+                                Rows Removed by Filter: 110040
+                                Buffers: shared hit=4445
+                          ->  Hash  (cost=1254.00..1254.00 rows=1569 width=4) (actual time=1.644..1.644 rows=1617.00 loops=1)
+                                Buckets: 2048  Batches: 1  Memory Usage: 73kB
+                                Buffers: shared hit=379
+                                ->  Seq Scan on favourites f  (cost=0.00..1254.00 rows=1569 width=4) (actual time=0.005..1.572 rows=1617.00 loops=1)
+                                      Filter: (saved_at >= '2026-06-24 00:00:00+05:30'::timestamp with time zone)
+                                      Rows Removed by Filter: 68383
+                                      Buffers: shared hit=379
+Planning:
+  Buffers: shared hit=204
+Planning Time: 0.319 ms
+Execution Time: 12.927 ms

@@ -1,0 +1,27 @@
+{
+  "team_number": "T0058",
+  "group_lead": {
+    "name": "Yatin Sharma",
+    "enrollment_no": "2501010710",
+    "github": "Yatin-x017"
+  },
+  "members": [
+    {
+      "name": "Dhaval Sethi",
+      "enrollment_no": "2501010141",
+      "github": "Dhaval-Sethi"
+    },
+    {
+      "name": "Puneet Goyal",
+      "enrollment_no": "2501010362",
+      "github": "Puneet-Goyal"
+    },
+    {
+      "name": "Ekansh Shrotriya",
+      "enrollment_no": "2501010160",
+      "github": "Ekansh-Shrotriya"
+    }
+  ],
+  "postgres_version": "17.11",
+  "laptop_used_for_benchmarks": "Apple MacBook Pro (M4, 16 GB)"
+}
