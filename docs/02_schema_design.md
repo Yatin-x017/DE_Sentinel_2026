@@ -105,7 +105,8 @@ Core ad entity tracking used item sales across lifecycle states (`ACTIVE`, `EXPI
 | `posted_at` | `TIMESTAMPTZ` | `NOT NULL` | Publication timestamp. |
 | `expires_at` | `TIMESTAMPTZ` | `NOT NULL CHECK (expires_at >= posted_at)` | Listing expiry timestamp (typically posted_at + 30 days). |
 | `sold_at` | `TIMESTAMPTZ` | `NULL CHECK (sold_at IS NULL OR sold_at >= posted_at)` | Timestamp item was marked sold. Must not precede publication. |
-| *Constraint* | `CHECK` | `(status = 'SOLD' AND sold_at IS NOT NULL) OR (status <> 'SOLD')` | Ensures every sold ad records an exact completion time. |
+| *Constraint* | `CHECK` | `CONSTRAINT chk_sold_time CHECK ((status = 'SOLD' AND sold_at IS NOT NULL) OR (status <> 'SOLD'))` | Ensures every sold ad records an exact completion time. |
+| *Constraint* | `CHECK` | `CONSTRAINT chk_attributes_json_object CHECK (jsonb_typeof(attributes) = 'object')` | Enforces that `attributes` always stores a top-level JSONB key-value object rather than scalar primitives or arrays. |
 
 ### 2.6 `chat_threads`
 Conversations between an interested buyer and an ad listing.
@@ -142,6 +143,7 @@ Price negotiations initiated by prospective buyers.
 | `status` | `VARCHAR(20)` | `NOT NULL CHECK (status IN ('ACCEPTED', 'COUNTERED', 'PENDING', 'REJECTED', 'WITHDRAWN'))` | Negotiation state. |
 | `created_at` | `TIMESTAMPTZ` | `NOT NULL` | Offer submission timestamp. |
 | `responded_at` | `TIMESTAMPTZ` | `NULL CHECK (responded_at IS NULL OR responded_at >= created_at)` | Seller reaction timestamp. |
+| *Constraint* | `CHECK` | `CONSTRAINT chk_offer_pending_responded CHECK ((status = 'PENDING' AND responded_at IS NULL) OR (status <> 'PENDING' AND responded_at IS NOT NULL))` | Ties offer lifecycle status to response timestamp: pending offers cannot have a response time, and resolved offers must record when the response occurred. |
 
 ### 2.9 `favourites`
 Bookmarking ads for later inspection.

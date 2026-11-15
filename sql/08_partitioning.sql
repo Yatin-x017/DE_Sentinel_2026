@@ -40,7 +40,8 @@ CREATE TABLE listings_partitioned (
     PRIMARY KEY (listing_id, posted_at),
     CONSTRAINT chk_part_sold_time CHECK (
         (status = 'SOLD' AND sold_at IS NOT NULL) OR (status <> 'SOLD')
-    )
+    ),
+    CONSTRAINT chk_attributes_json_object CHECK (jsonb_typeof(attributes) = 'object')
 ) PARTITION BY RANGE (posted_at);
 
 -- ---------------------------------------------------------------------

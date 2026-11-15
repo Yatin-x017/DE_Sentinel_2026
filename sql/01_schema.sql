@@ -79,7 +79,8 @@ CREATE TABLE listings (
     sold_at TIMESTAMPTZ CHECK (sold_at IS NULL OR sold_at >= posted_at),
     CONSTRAINT chk_sold_time CHECK (
         (status = 'SOLD' AND sold_at IS NOT NULL) OR (status <> 'SOLD')
-    )
+    ),
+    CONSTRAINT chk_attributes_json_object CHECK (jsonb_typeof(attributes) = 'object')
 );
 
 -- 6. Chat Threads Table
@@ -109,7 +110,10 @@ CREATE TABLE offers (
     offer_price NUMERIC(12, 2) NOT NULL CHECK (offer_price > 0),
     status VARCHAR(20) NOT NULL CHECK (status IN ('ACCEPTED', 'COUNTERED', 'PENDING', 'REJECTED', 'WITHDRAWN')),
     created_at TIMESTAMPTZ NOT NULL,
-    responded_at TIMESTAMPTZ CHECK (responded_at IS NULL OR responded_at >= created_at)
+    responded_at TIMESTAMPTZ CHECK (responded_at IS NULL OR responded_at >= created_at),
+    CONSTRAINT chk_offer_pending_responded CHECK (
+        (status = 'PENDING' AND responded_at IS NULL) OR (status <> 'PENDING' AND responded_at IS NOT NULL)
+    )
 );
 
 -- 9. Favourites Table
