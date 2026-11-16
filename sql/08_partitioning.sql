@@ -84,9 +84,25 @@ ANALYZE listings_partitioned;
 
 -- ---------------------------------------------------------------------
 -- 4. Demonstration of Partition Pruning
--- Query targeting June 2026 growth statistics scans ONLY listings_y2026_h1.
 -- ---------------------------------------------------------------------
+
+-- Demo 1: Date-range query targeting June 2026 growth statistics scans ONLY listings_y2026_h1.
+-- The planner statically prunes all other partitions.
 EXPLAIN (ANALYZE, BUFFERS)
 SELECT count(*)
 FROM listings_partitioned
 WHERE posted_at >= '2026-06-01 00:00:00+05:30' AND posted_at < '2026-07-01 00:00:00+05:30';
+
+-- Demo 2: Recent active ads browsing query with date bounds prunes historical partitions
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT listing_id, title, price, posted_at
+FROM listings_partitioned
+WHERE category_id = 2 AND status = 'ACTIVE'
+  AND posted_at >= '2026-06-01 00:00:00+05:30'
+ORDER BY posted_at DESC
+LIMIT 20;
+
+-- Demo 3: Zero-downtime partition lifecycle demonstration
+-- When ads in listings_y2025_h1 cross the 2-year retention threshold:
+-- ALTER TABLE listings_partitioned DETACH PARTITION listings_y2025_h1;
+-- DROP TABLE listings_y2025_h1;  -- Metadata-only drop: instant, zero vacuum overhead, zero locks.

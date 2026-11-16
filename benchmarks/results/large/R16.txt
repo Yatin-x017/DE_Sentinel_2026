@@ -1,0 +1,96 @@
+=== R16 run 1 ===
+Limit  (cost=2425.16..2425.21 rows=122 width=29) (actual time=6.054..6.056 rows=122.00 loops=1)
+  Buffers: shared hit=36536 read=65
+  ->  Sort  (cost=2425.16..2425.48 rows=794 width=29) (actual time=6.053..6.055 rows=122.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=36536 read=65
+        ->  GroupAggregate  (cost=2419.10..2421.70 rows=794 width=29) (actual time=5.859..5.998 rows=5816.00 loops=1)
+              Group Key: f.listing_id, l.title
+              Buffers: shared hit=36518 read=65
+              ->  Sort  (cost=2419.10..2419.42 rows=794 width=21) (actual time=5.855..5.880 rows=8425.00 loops=1)
+                    Sort Key: f.listing_id, l.title
+                    Sort Method: quicksort  Memory: 103kB
+                    Buffers: shared hit=36518 read=65
+                    ->  Hash Join  (cost=2354.82..2414.53 rows=794 width=21) (actual time=5.194..5.730 rows=8425.00 loops=1)
+                          Hash Cond: (f.listing_id = l.listing_id)
+                          Buffers: shared hit=36481 read=65
+                          ->  Index Only Scan using idx_favourites_saved_at on favourites f  (cost=0.29..55.87 rows=9629 width=4) (actual time=0.418..0.851 rows=9879.00 loops=1)
+                                Index Cond: (saved_at >= '2026-06-24 00:00:00+05:30'::timestamp with time zone)
+                                Heap Fetches: 0
+                                Index Searches: 1
+                                Buffers: shared hit=6 read=9
+                          ->  Hash  (cost=2230.87..2230.87 rows=60438 width=21) (actual time=4.757..4.758 rows=60853.00 loops=1)
+                                Buckets: 16384  Batches: 1  Memory Usage: 659kB
+                                Buffers: shared hit=36475 read=56
+                                ->  Index Scan using idx_listings_expires_active on listings l  (cost=0.29..2230.87 rows=60438 width=21) (actual time=0.015..4.099 rows=60853.00 loops=1)
+                                      Index Searches: 1
+                                      Buffers: shared hit=36475 read=56
+Planning:
+  Buffers: shared hit=3519 read=1
+Planning Time: 0.955 ms
+Execution Time: 45.575 ms
+=== R16 run 2 ===
+Limit  (cost=2425.16..2425.21 rows=122 width=29) (actual time=4.137..4.139 rows=122.00 loops=1)
+  Buffers: shared hit=36933
+  ->  Sort  (cost=2425.16..2425.48 rows=794 width=29) (actual time=4.137..4.138 rows=122.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=36933
+        ->  GroupAggregate  (cost=2419.10..2421.70 rows=794 width=29) (actual time=3.935..4.079 rows=5816.00 loops=1)
+              Group Key: f.listing_id, l.title
+              Buffers: shared hit=36915
+              ->  Sort  (cost=2419.10..2419.42 rows=794 width=21) (actual time=3.932..3.956 rows=8425.00 loops=1)
+                    Sort Key: f.listing_id, l.title
+                    Sort Method: quicksort  Memory: 103kB
+                    Buffers: shared hit=36915
+                    ->  Hash Join  (cost=2354.82..2414.53 rows=794 width=21) (actual time=3.656..3.807 rows=8425.00 loops=1)
+                          Hash Cond: (f.listing_id = l.listing_id)
+                          Buffers: shared hit=36878
+                          ->  Index Only Scan using idx_favourites_saved_at on favourites f  (cost=0.29..55.87 rows=9629 width=4) (actual time=0.019..0.069 rows=9879.00 loops=1)
+                                Index Cond: (saved_at >= '2026-06-24 00:00:00+05:30'::timestamp with time zone)
+                                Heap Fetches: 0
+                                Index Searches: 1
+                                Buffers: shared hit=61
+                          ->  Hash  (cost=2230.87..2230.87 rows=60438 width=21) (actual time=3.627..3.627 rows=60853.00 loops=1)
+                                Buckets: 16384  Batches: 1  Memory Usage: 659kB
+                                Buffers: shared hit=36817
+                                ->  Index Scan using idx_listings_expires_active on listings l  (cost=0.29..2230.87 rows=60438 width=21) (actual time=0.005..3.113 rows=60853.00 loops=1)
+                                      Index Searches: 1
+                                      Buffers: shared hit=36817
+Planning:
+  Buffers: shared hit=3525
+Planning Time: 0.792 ms
+Execution Time: 41.250 ms
+=== R16 run 3 ===
+Limit  (cost=2425.16..2425.21 rows=122 width=29) (actual time=4.246..4.248 rows=122.00 loops=1)
+  Buffers: shared hit=36933
+  ->  Sort  (cost=2425.16..2425.48 rows=794 width=29) (actual time=4.245..4.246 rows=122.00 loops=1)
+        Sort Key: (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=36933
+        ->  GroupAggregate  (cost=2419.10..2421.70 rows=794 width=29) (actual time=4.045..4.187 rows=5816.00 loops=1)
+              Group Key: f.listing_id, l.title
+              Buffers: shared hit=36915
+              ->  Sort  (cost=2419.10..2419.42 rows=794 width=21) (actual time=4.042..4.067 rows=8425.00 loops=1)
+                    Sort Key: f.listing_id, l.title
+                    Sort Method: quicksort  Memory: 103kB
+                    Buffers: shared hit=36915
+                    ->  Hash Join  (cost=2354.82..2414.53 rows=794 width=21) (actual time=3.767..3.919 rows=8425.00 loops=1)
+                          Hash Cond: (f.listing_id = l.listing_id)
+                          Buffers: shared hit=36878
+                          ->  Index Only Scan using idx_favourites_saved_at on favourites f  (cost=0.29..55.87 rows=9629 width=4) (actual time=0.019..0.069 rows=9879.00 loops=1)
+                                Index Cond: (saved_at >= '2026-06-24 00:00:00+05:30'::timestamp with time zone)
+                                Heap Fetches: 0
+                                Index Searches: 1
+                                Buffers: shared hit=61
+                          ->  Hash  (cost=2230.87..2230.87 rows=60438 width=21) (actual time=3.738..3.738 rows=60853.00 loops=1)
+                                Buckets: 16384  Batches: 1  Memory Usage: 659kB
+                                Buffers: shared hit=36817
+                                ->  Index Scan using idx_listings_expires_active on listings l  (cost=0.29..2230.87 rows=60438 width=21) (actual time=0.005..3.220 rows=60853.00 loops=1)
+                                      Index Searches: 1
+                                      Buffers: shared hit=36817
+Planning:
+  Buffers: shared hit=3525
+Planning Time: 0.759 ms
+Execution Time: 40.120 ms

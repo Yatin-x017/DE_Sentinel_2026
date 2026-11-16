@@ -1,0 +1,39 @@
+=== R02 run 1 ===
+Sort  (cost=8.32..8.33 rows=1 width=103) (actual time=0.360..0.360 rows=8.00 loops=1)
+  Sort Key: price
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=18 read=2
+  ->  Index Scan using idx_listings_r02 on listings  (cost=0.29..8.31 rows=1 width=103) (actual time=0.334..0.345 rows=8.00 loops=1)
+        Index Cond: ((category_id = 2) AND (city_id = 6) AND ((attributes ->> 'fuel'::text) = 'Diesel'::text) AND (((attributes ->> 'year'::text))::integer >= 2018) AND (((attributes ->> 'km_driven'::text))::integer <= 60000))
+        Index Searches: 1
+        Buffers: shared hit=13 read=2
+Planning:
+  Buffers: shared hit=874
+Planning Time: 0.997 ms
+Execution Time: 0.527 ms
+=== R02 run 2 ===
+Sort  (cost=8.32..8.33 rows=1 width=103) (actual time=0.045..0.045 rows=8.00 loops=1)
+  Sort Key: price
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=22
+  ->  Index Scan using idx_listings_r02 on listings  (cost=0.29..8.31 rows=1 width=103) (actual time=0.020..0.030 rows=8.00 loops=1)
+        Index Cond: ((category_id = 2) AND (city_id = 6) AND ((attributes ->> 'fuel'::text) = 'Diesel'::text) AND (((attributes ->> 'year'::text))::integer >= 2018) AND (((attributes ->> 'km_driven'::text))::integer <= 60000))
+        Index Searches: 1
+        Buffers: shared hit=17
+Planning:
+  Buffers: shared hit=874
+Planning Time: 0.826 ms
+Execution Time: 0.385 ms
+=== R02 run 3 ===
+Sort  (cost=8.32..8.33 rows=1 width=103) (actual time=0.051..0.051 rows=8.00 loops=1)
+  Sort Key: price
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=22
+  ->  Index Scan using idx_listings_r02 on listings  (cost=0.29..8.31 rows=1 width=103) (actual time=0.022..0.034 rows=8.00 loops=1)
+        Index Cond: ((category_id = 2) AND (city_id = 6) AND ((attributes ->> 'fuel'::text) = 'Diesel'::text) AND (((attributes ->> 'year'::text))::integer >= 2018) AND (((attributes ->> 'km_driven'::text))::integer <= 60000))
+        Index Searches: 1
+        Buffers: shared hit=17
+Planning:
+  Buffers: shared hit=874
+Planning Time: 1.391 ms
+Execution Time: 0.342 ms
