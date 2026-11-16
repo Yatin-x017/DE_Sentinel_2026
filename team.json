@@ -3,23 +3,27 @@
   "group_lead": {
     "name": "Yatin Sharma",
     "enrollment_no": "2501010710",
-    "github": "Yatin-x017"
+    "github": "Yatin-x017",
+    "email":"yatinx017@gmail.com"
   },
   "members": [
     {
       "name": "Dhaval Sethi",
       "enrollment_no": "2501010141",
-      "github": "Dhaval-Sethi"
+      "github": "dhavalsethii",
+      "email":"dhaval.s25141@nst.rishihood.edu.in"
     },
     {
       "name": "Puneet Goyal",
       "enrollment_no": "2501010362",
-      "github": "Puneet-Goyal"
+      "github": "Puneet-Goyal",
+      "email":"puneet.g25362@nst.rishihood.edu.in"
     },
     {
       "name": "Ekansh Shrotriya",
       "enrollment_no": "2501010160",
-      "github": "Ekansh-Shrotriya"
+      "github": "ekanshs25160-bit",
+      "email":"ekansh.s25610@nst.rishihood.edu.in"
     }
   ],
   "postgres_version": "17.11",
